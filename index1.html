@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elden Ring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            height: 100vh; /* Full viewport height */
+            background-color: #1b1b1b; /* Fallback color */
+            background-size: cover; /* Cover the entire body */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Prevent repeating background image */
+            cursor: pointer;
+        }
+        h1 {
+            color: #f39c12;
+            position: relative; /* Ensures h1 text appears on top */
+            z-index: 1; /* Moves h1 above background */
+            margin-top: 0; /* Removes top margin */
+        }
+    </style>
+</head>
+<body onclick="changeBackground()">
+    <h1>Unfortunately, you are madeless</h1>
+    
+    <script>
+        // Array of background image URLs
+        const backgrounds = [
+            'https://raw.githubusercontent.com/harellol/picture/main/download.jfif',
+            'https://raw.githubusercontent.com/harellol/picture/main/download%20(3).jfif',
+            'https://raw.githubusercontent.com/harellol/picture/main/download%20(1).jfif',
+            'https://raw.githubusercontent.com/harellol/picture/main/download%20(2).jfif'
+            // Add more image URLs as needed
+        ];
+
+        // Keep track of the current background index
+        let currentIndex = 0;
+
+        // Function to change the background image
+        function changeBackground() {
+            currentIndex = (currentIndex + 1) % backgrounds.length;
+            document.body.style.backgroundImage = `url(${backgrounds[currentIndex]})`;
+        }
+
+        // Set initial background
+        document.body.style.backgroundImage = `url(${backgrounds[currentIndex]})`;
+    </script>
+</body>
+</html>
