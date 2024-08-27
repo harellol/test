@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery with Music Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            height: 100vh; /* Full viewport height */
+            background-color: #1b1b1b; /* Fallback color */
+            cursor: pointer;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        h1 {
+            color: #f39c12;
+            margin-top: 20px; /* Margin from the top */
+        }
+        #imageContainer {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
+            grid-template-rows: repeat(2, 1fr); /* 2 rows */
+            gap: 10px; /* Space between images */
+            height: calc(100vh - 120px); /* Full viewport height minus the h1 and buttons */
+            width: 100%;
+            position: relative; /* Allows absolute positioning of images */
+            overflow: hidden; /* Prevents scrollbars */
+        }
+        .imageWrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures images cover the container */
+            transition: opacity 0.5s ease; /* Smooth transition for image appearance/disappearance */
+            opacity: 0; /* Start with image hidden */
+        }
+        #audio {
+            display: none; /* Hide the audio element */
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        #uploadButton {
+            background-color: #3498db; /* Blue */
+        }
+        #uploadButton:hover {
+            background-color: #2980b9;
+        }
+        #playButton {
+            background-color: #2ecc71; /* Green */
+        }
+        #playButton:hover {
+            background-color: #27ae60;
+        }
+        #pauseButton {
+            background-color: #e74c3c; /* Red */
+        }
+        #pauseButton:hover {
+            background-color: #c0392b;
+        }
+        #status {
+            font-size: 18px;
+            color: #ffffff;
+            margin-top: 20px;
+        }
+        #fileInput {
+            display: none; /* Hide file input */
+        }
+    </style>
+</head>
+<body onclick="changeImage()">
+    <h1>Unfortunately, you are maidenless</h1>
+    <div id="status">Music: Stopped</div>
+    <div id="imageContainer"></div>
+    
+    <!-- File upload button and input for background music -->
+    <button id="uploadButton" class="button">Upload Background Music</button>
+    <input type="file" id="fileInput" accept="audio/*">
+    <button id="playButton" class="button">Play Music</button>
+    <button id="pauseButton" class="button">Pause Music</button>
+    
+    <!-- Audio element to play background music -->
+    <audio id="audio" loop></audio>
+    
+    <script>
+        // Array of image URLs
+        const images = [
+            'https://raw.githubusercontent.com/harellol/test/picture/images.jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(1).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(2).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(3).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(4).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(5).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(6).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(7).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(8).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(9).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(10).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(11).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(12).jfif',
+            'https://raw.githubusercontent.com/harellol/test/picture/images%20(13).jfif'
+            // Add more image URLs as needed
+        ];
+
+        // Keep track of the current image index
+        let currentIndex = 0;
+        // Keep track of image elements in the container
+        let imagesOnScreen = [];
+
+        // Function to change the image
+        function changeImage() {
+            // Create a new image element
+            const newImage = document.createElement('img');
+            newImage.src = images[currentIndex];
+            
+            // Create a new image wrapper
+            const imageWrapper = document.createElement('div');
+            imageWrapper.classList.add('imageWrapper');
+            imageWrapper.appendChild(newImage);
+
+            // Add the image wrapper to the container
+            const container = document.getElementById('imageContainer');
+            container.appendChild(imageWrapper);
+
+            // Update the current index
+            currentIndex = (currentIndex + 1) % images.length;
+
+            // Show the new image with a fade-in effect
+            setTimeout(() => {
+                newImage.style.opacity = 1;
+            }, 50); // Short delay to ensure opacity change
+
+            // Track the new image
+            imagesOnScreen.push(imageWrapper);
+
+            // If there are more than 8 images, remove the oldest one
+            if (imagesOnScreen.length > 8) {
+                const oldestWrapper = imagesOnScreen.shift(); // Remove the oldest wrapper
+                oldestWrapper.style.opacity = 0; // Fade out the oldest image
+                
+                // Remove the oldest wrapper after the transition
+                setTimeout(() => {
+                    oldestWrapper.remove();
+                }, 500); // Delay matches the CSS transition duration
+            }
+        }
+
+        // Function to handle audio file selection
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const audioElement = document.getElementById('audio');
+                const fileURL = URL.createObjectURL(file);
+                audioElement.src = fileURL;
+                audioElement.play();
+                updateStatus('Playing');
+            }
+        });
+
+        // Function to play the audio
+        function playAudio() {
+            const audioElement = document.getElementById('audio');
+            audioElement.play().catch(error => {
+                console.error('Error playing audio:', error);
+            });
+            updateStatus('Playing');
+        }
+
+        // Function to pause the audio
+        function pauseAudio() {
+            const audioElement = document.getElementById('audio');
+            audioElement.pause();
+            updateStatus('Stopped');
+        }
+
+        // Function to update the music status text
+        function updateStatus(status) {
+            document.getElementById('status').textContent = `Music: ${status}`;
+        }
+
+        // Add event listeners to buttons
+        document.getElementById('playButton').addEventListener('click', playAudio);
+        document.getElementById('pauseButton').addEventListener('click', pauseAudio);
+
+        // Set initial background music
+        const initialMusic = 'Super Mario Bros. Theme Song [ ezmp3.cc ].mp3';
+        const audioElement = document.getElementById('audio');
+        audioElement.src = initialMusic;
+        audioElement.play();
+        updateStatus('Playing');
+    </script>
+</body>
+</html>
